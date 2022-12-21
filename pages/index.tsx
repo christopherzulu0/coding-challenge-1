@@ -3,24 +3,21 @@ import { prisma } from '../lib/prisma'
 import { useRouter } from 'next/router'
 import { useState } from 'react';
 import { EditIcon,DeleteIcon} from '@chakra-ui/icons'
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Flex,
   Box,
   FormControl,
   FormLabel,
   Input,
-  Checkbox,
   Stack,
-  Link,
   Button,
   Heading,
-  Text,
-  useColorModeValue,
-  Radio, 
+  useColorModeValue, 
   RadioGroup,
   Select, 
 } from '@chakra-ui/react';
-
+import {useForm } from "react-hook-form";
 import {
   Table,
   Thead,
@@ -29,7 +26,6 @@ import {
   Tr,
   Th,
   Td,
-  TableCaption,
   TableContainer,
 } from '@chakra-ui/react'
 import { z } from 'zod'
@@ -54,11 +50,16 @@ interface FormData {
 
 export default function Home({cars}: Cars) {
 
-  const schema = z.object({
-    name: z.string().min(2),
-    model: z.string().min(5),
-    wheels: z.string().min(20),
-  }).strict();
+  const validationSchema = z
+  .object({
+    name: z.string().min(10, { message: "Vehicle name is required" }),
+    model: z.string().min(10, { message: "Vehicle model is required" }),
+    wheels: z.string().min(10, { message: "Number of wheels are required" }),
+  });
+
+type ValidationSchema = z.infer<typeof validationSchema>;
+
+
 
   const [form, setForm] = useState<FormData>({name: '', model: '',wheels: '', id: ''})
 
@@ -105,7 +106,7 @@ The following line of code for the function:
   {/**This line of code ,collects user inputs */}
   const handleSubmit = async (data: FormData) => {
     try {
-     create(data) 
+     create(data)
     } catch (error) {
       console.log(error);
     }
@@ -133,6 +134,12 @@ The following line of code for the function:
      console.log(error); 
     }
   }
+
+  const {
+    formState: { errors },
+  } = useForm<ValidationSchema>({
+    resolver: zodResolver(validationSchema),
+  });
   return (
     <>
      <Flex
@@ -164,9 +171,16 @@ The following line of code for the function:
               >
               <FormLabel>Name</FormLabel>
               <Input 
+              required
                 value={form.name}
                 onChange={e => setForm({...form, name: e.target.value})}
               type="name" variant='filled' />
+            
+            {errors.name && (
+            <p className="text-xs italic text-red-500 mt-2">
+              {errors.name?.message}
+            </p>
+          )}
             </FormControl>
             <FormControl id="name">
               <FormLabel
@@ -175,8 +189,14 @@ The following line of code for the function:
               <Input 
                value={form.model}
                onChange={e => setForm({...form, model: e.target.value})}
-
+               required
               type="name"  variant='filled' />
+             
+             {errors.model && (
+            <p className="text-xs italic text-red-500 mt-2">
+              {errors.model?.message}
+            </p>
+          )}
             </FormControl>
             <RadioGroup defaultValue='1'>
             <FormControl>
@@ -185,11 +205,17 @@ The following line of code for the function:
           value={form.wheels}
           onChange={e => setForm({...form, wheels: e.target.value})}
           
-          placeholder='Select number of wheels'>
+          placeholder='Select number of wheels' required>
             <option value="2 Wheels">2 Wheels</option>
             <option value="3 Wheels">3 Wheels</option>
             <option value="4 Wheels">4 Wheels</option>
           </Select>
+          {errors.wheels && (
+            <p className="text-xs italic text-red-500 mt-2">
+              {errors.wheels?.message}
+            </p>
+          )}
+        
         </FormControl>
         </RadioGroup>
             <Stack spacing={10}>
