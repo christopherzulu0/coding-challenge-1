@@ -10,6 +10,7 @@ type vehicleUpdate = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse){
 	const vehicleId = req.query.id;
 
+       {/**Delete function for the vehicle */}
 	if(req.method === 'DELETE') {
 		const vehicles = await prisma.vehicle.delete({
 			where: {id: Number(vehicleId)}
@@ -19,6 +20,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		console.log("vehicle could not be deleted");
 	}
 
+
+	{/**Update function for the vehicle */}
 	if (req.method === "PUT") {
 		const vehicleId = req.query.id;
 		const { name,model,wheels } = req.body

@@ -4,6 +4,7 @@ import { prisma } from "../../../lib/prisma";
 export default async function handler(req: NextApiRequest, res: NextApiResponse){
 	const {name,model,wheels} = req.body
 
+	{/**Try & Catch Error before submitting Data to Postgresql */}
 	try {
 		await prisma.vehicle.create({
 			data: {
@@ -17,3 +18,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		console.log("Failure");
 	}
 }
+{/** End of Try & Catch Error before submitting Data to Postgresql */}

@@ -58,16 +58,24 @@ export default function Home({cars}: Cars) {
     name: z.string().min(2),
     model: z.string().min(5),
     wheels: z.string().min(20),
-  })
+  }).strict();
 
   const [form, setForm] = useState<FormData>({name: '', model: '',wheels: '', id: ''})
 
+  {/**This line of code refreshes the page after data, has been submitted to the database*/}
   const router = useRouter()
-
   const refreshData = () => {
     router.replace(router.asPath)
   }
+{/**End Of This line of code refreshes the page after data, has been submitted to the database*/}
 
+
+{/**
+The following line of code for the function:
+1. It fetches the logic of posting data to the database, after user inputs are collected using the api vechicles
+2.  It updates the eisting data in the database, by diplaying the default values from the database using setForm,data by
+     vehicle.id and if data eists, it deletes the default values by replaying them with new ones.
+*/}
   async function create(data: FormData) {
     try {
       fetch('http://localhost:3000/api/vehicles/form', {
@@ -78,7 +86,7 @@ export default function Home({cars}: Cars) {
         method: 'POST'
       }).then(() => {
         if(data.id) {
-          Delete(data.id)j
+          Delete(data.id)
           setForm({name: '',model: '', wheels: '', id: ''})
           refreshData()
         } else {
@@ -94,6 +102,7 @@ export default function Home({cars}: Cars) {
   }
 
   
+  {/**This line of code ,collects user inputs */}
   const handleSubmit = async (data: FormData) => {
     try {
      create(data) 
@@ -109,6 +118,7 @@ export default function Home({cars}: Cars) {
     id: string
   }
 
+  {/**This line of code,handles the deletion of data using the vehicle.id*/}
   async function Delete(id: string) {
     try {
      fetch(`http://localhost:3000/api/delete_api/${id}`, {
@@ -133,8 +143,9 @@ export default function Home({cars}: Cars) {
       <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
         <Stack align={'left'}>
           <Heading fontSize={'4xl'}>Vehicle Management App</Heading>
-          
         </Stack>
+
+        {/**Start Of The Form*/}
         <form 
             onSubmit={e => {
               e.preventDefault()
@@ -198,15 +209,12 @@ export default function Home({cars}: Cars) {
           </Stack>
         </Box>
         </form>
-       
+       {/**End Of The Start Of The Form*/}
       </Stack>
 
- 
+ {/**Start Of The Table Form*/}
       <TableContainer marginRight='12%' marginTop='8%'>
-     
   <Table size='sm' variant='striped' colorScheme='blue'>
- 
-    
     <Thead>
       <Tr>
         <Th>Name</Th>
@@ -239,10 +247,9 @@ export default function Home({cars}: Cars) {
         <Th>Delete</Th>
       </Tr>
     </Tfoot>
-    
   </Table>
- 
 </TableContainer>
+{/**End Of The Table Form*/}
 
     </Flex>
     
